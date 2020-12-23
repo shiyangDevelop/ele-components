@@ -1,7 +1,7 @@
 <template>
-  <label class="el-radio">
+  <label class="el-checkbox">
     <span>
-      <input type="radio" :value="label" :disabled="_isDisabled" :name="name"
+      <input type="checkbox" :value="label" :disabled="_isDisabled" :name="name"
         :checked="_isChecked" @change="changeEvent">
     </span>
     <span>
@@ -12,15 +12,15 @@
 <script>
 import emitter from '../../mixin/emitter'
 export default {
-  name: 'el-radio',
+  name: 'el-checkbox',
   inject: {
-    radioGroup: {
+    checkboxGroup: {
       default: null
     }
   },
   mixins: [emitter],
   props: {
-    value: String | Number | Boolean,
+    value: Boolean,
     label: String | Number | Boolean,
     disabled: Boolean,
     border: Boolean,
@@ -37,7 +37,7 @@ export default {
       while (parent) {
         if (parent === this.$root) {
           return false
-        } else if (parent.$options.name !== 'el-radio-group') {
+        } else if (parent.$options.name !== 'el-checkbox-group') {
           parent = parent.$parent || this.$root
         } else {
           return true
@@ -45,18 +45,18 @@ export default {
       }
     },
     _isChecked () {
-      return (this.value === this.label) || (this.radioGroup && this.radioGroup.value === this.label)
+      return this.value || (this.checkGroup && this.checkGroup.value.includes(this.label))
     },
     _isDisabled () {
-      return this.disabled || (this.radioGroup && this.radioGroup.disabled)
+      return this.disabled || (this.checkGroup && this.checkGroup.disabled)
     }
   },
   methods: {
     changeEvent (event) {
       if (this.isGroup) {
-        this.dispatch('el-radio-group', 'handlechange', event.target.value)
+        this.dispatch('el-checkbox-group', 'handlechange', this.label, event.target.checked)
       } else {
-        this.$emit('change', event.target.value)
+        this.$emit('change', event.target.checked)
       }
     }
   }
